@@ -55,8 +55,13 @@ const interviewSchema = new mongoose.Schema({
     type: String,
     enum: ["Incomplete", "Completed" ],
     default: "Incomplete"
+  },
+status: {
+    type: String,
+    // Add "completed" to this array list right here:
+    enum: ['pending', 'active', 'completed', 'Completed', 'finished'], 
+    default: 'pending'
   }
-
 }, { timestamps: true });
 
 const Interview = mongoose.model('Interview', interviewSchema);
