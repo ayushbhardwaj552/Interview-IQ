@@ -7,7 +7,7 @@ const isAuth = (req, res, next) => {
 
     if (!token) {
       return res.status(401).json({
-        message: "User does not have token",
+        message: "No token found",
         success: false,
       });
     }
@@ -17,14 +17,7 @@ const isAuth = (req, res, next) => {
       process.env.JWT_SECRET
     );
 
-    if (!verifyToken) {
-      return res.status(401).json({
-        message: "Invalid token",
-        success: false,
-      });
-    }
-
-    req.userId = verifyToken.id;
+    req.userId = verifyToken.userId;
 
     next();
 
@@ -32,8 +25,8 @@ const isAuth = (req, res, next) => {
 
     console.log(err);
 
-    return res.status(500).json({
-      message: `Authentication error ${err.message}`,
+    return res.status(401).json({
+      message: "Invalid token",
       success: false,
     });
   }
