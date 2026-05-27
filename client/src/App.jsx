@@ -26,7 +26,7 @@ function App(){
       dispatch(setUserData(result.data.user));
     }
     catch(err){ 
-      console.log(err);
+      console.log(err.response?.data || err.message);
       dispatch(setUserData(null));
     }
   }
