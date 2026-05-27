@@ -14,7 +14,7 @@ const app = express();
 
 // 1. Dynamic CORS Configuration
 const allowedOrigins = [
-https://interview-iq-3.onrender.com,
+"https://interview-iq-3.onrender.com",
   process.env.FRONTEND_URL
 ].filter(Boolean);
 
