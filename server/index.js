@@ -10,73 +10,61 @@ import paymentRouter from './routes/payment.route.js';
 
 dotenv.config();
 
-const app = express();
+const app = express(); 
 
-// IMPORTANT FOR RENDER COOKIES
-app.set("trust proxy", 1);
+// 1. Dynamic CORS Configuration
+const allowedOrigins = [
+https://interview-iq-3.onrender.com,
+  process.env.FRONTEND_URL
+].filter(Boolean);
 
-// Allowed Origins
-app.use(
-  cors({
-    origin: [
-      "http://localhost:5173",
-      "https://interview-iq-3.onrender.com",
-    ],
-    credentials: true,
-  })
-);
-// CORS
-app.use(
-  cors({
-    origin: function (origin, callback) {
+app.use(cors({
+  origin: function (origin, callback) {
+    // Allow requests with no origin (like mobile apps, postman, or server-to-server)
+    if (!origin) return callback(null, true);
+    
+    if (allowedOrigins.indexOf(origin) !== -1) {
+      callback(null, true);
+    } else {
+      // Print exactly which origin failed to make debugging easier in Render logs
+      console.error(`CORS Blocked Origin: ${origin}`);
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+  credentials: true
+}));
 
-      // allow requests with no origin
-      if (!origin) return callback(null, true);
-
-      if (allowedOrigins.includes(origin)) {
-        callback(null, true);
-      } else {
-        callback(new Error("Not allowed by CORS"));
-      }
-    },
-    credentials: true,
-  })
-);
-
-// Middlewares
+// 2. Standard Middlewares
 app.use(express.json());
 app.use(cookieParser());
 
-// Firebase popup support
+// 3. Security Headers for Firebase Popup Auth / Cross-Origin Isolation
 app.use((req, res, next) => {
   res.setHeader(
     "Cross-Origin-Opener-Policy",
     "same-origin-allow-popups"
   );
-
   res.setHeader(
     "Cross-Origin-Embedder-Policy",
     "unsafe-none"
   );
-
   next();
 });
 
-// Routes
+// 4. API Routes
 app.use("/api/auth", authRouter);
 app.use("/api/user", userRouter);
 app.use("/api/interview", interviewRouter);
 app.use("/api/payment", paymentRouter);
 
-// Health Route
+// 5. Root Health Check
 app.get("/", (req, res) => {
   res.status(200).send("Server is running smoothly.");
 });
 
 const PORT = process.env.PORT || 8000;
 
-app.listen(PORT, async () => {
-  console.log(`Server running on port ${PORT}`);
-
-  await connectDb();
+app.listen(PORT, () => {
+  console.log(`Server is running on port ${PORT}`);
+  connectDb();
 });
