@@ -16,12 +16,15 @@ const app = express();
 app.set("trust proxy", 1);
 
 // Allowed Origins
-const allowedOrigins = [
-  "http://localhost:5173",
-  "https://ai-interview-rouge-zeta-80.vercel.app",
-  process.env.FRONTEND_URL
-].filter(Boolean);
-
+app.use(
+  cors({
+    origin: [
+      "http://localhost:5173",
+      "https://interview-iq-3.onrender.com",
+    ],
+    credentials: true,
+  })
+);
 // CORS
 app.use(
   cors({
